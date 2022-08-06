@@ -77,6 +77,42 @@ private:
 	// define scale and scale size variables so that can increase size of model
 	float scaleY;
 	float scaleSize;
+	
+	float swayTree;
+	float rotateswayTree;
+	float swingingPunchBag;
+	float topBallfallX;
+	float topBallfallY;
+	float greenBallX;
+	float greenBallY;
+	float bouncingBalls;
+	float movingTreadmill;
+	float treadmillSpeed;
+	float aroundtheWorldleft;
+	float aroundtheWorldright;
+	bool isLeft;
+	bool isRight;
+	float floatingDumbbellsUP;
+	float scaleDumbbell;
+	float floorWeightsY;
+	float movecarForward;
+	float rotatecarRight;
+	float movecarminusX;
+	float rotatecarRight2nd;
+	float movecar3rd;
+	float rotatecarRight3rd;
+	float movecar4th;
+	float rotatecarRight4th;
+	float movecar5th;
+	float rotatecarRight5th;
+	float movecar6th;
+	float doorOpening;
+	float wheels360;
+	float fireworks;
+	bool sprout;
+	/*float rotateWeightsX;
+	float rotateWeightsX2;
+	float translateWeightsZ;*/
 
 	// define the matrix stacks required
 	MS modelStack, viewStack, projectionStack;
