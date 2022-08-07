@@ -106,10 +106,12 @@ private:
 	float movecar5th;
 	float rotatecarRight5th;
 	float movecar6th;
-	float doorOpening;
 	float wheels360;
 	float fireworks;
 	bool sprout;
+	float topcarRotate;
+	float helicopterCar;
+
 	/*float rotateWeightsX;
 	float rotateWeightsX2;
 	float translateWeightsZ;*/

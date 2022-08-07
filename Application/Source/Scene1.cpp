@@ -42,7 +42,7 @@ void Scene1::Init()
 	
 
 	// Initialise the cameras
-	camera.Init(Vector3(10, 10, 8), Vector3(1, 1, 1), Vector3(0, 1, 0));
+	camera.Init(Vector3(15, 5, 10), Vector3(1, 1, 1), Vector3(0, 1, 0));
 
 	// initialising the moveZ and planePos to zero vectors at origin for Z AXIS
 	moveZ.SetZero();
@@ -129,11 +129,15 @@ void Scene1::Init()
 
 	movecar6th = 0.0f;
 
-	doorOpening = 0.0f;
 
 	wheels360 = 0.0f;
 
 	fireworks = 0.0f;
+
+	topcarRotate = 0.0f;
+
+
+	helicopterCar = 0.0f;
 	//define the projection matrix 
 	Mtx44 projection;
 	projection.SetToPerspective(45.f, 4.f / 3.f, 0.1f, 1000.f);
@@ -146,7 +150,7 @@ void Scene1::Init()
 		meshList[i] = nullptr;
 	}
 
-	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 1, 1000);
+	meshList[GEO_AXES] = MeshBuilder::GenerateAxes("reference", 1000, 0, 1000);
 	meshList[GEO_QUAD] = MeshBuilder::GenerateQuad("quad", Color(0,0,0), 1);
 	meshList[GEO_RANDQUADCOLOR] = MeshBuilder::GenerateQuad("quad", Color(0.502f, 0.712f, 1), 1);
 	meshList[GEO_WHITEQUAD] = MeshBuilder::GenerateQuad("quad", Color(1, 1, 1), 1);
@@ -184,7 +188,7 @@ void Scene1::Init()
 	meshList[GEO_CIRCLE] = MeshBuilder::GenerateCircle("circle" , Color(1, 1,
 		1), 16);
 	meshList[GEO_CONE] = MeshBuilder::GenerateCone("cone", Color(1, 1,
-		1), 16 , 2);
+		1), 8 , 2);
 	meshList[GEO_GREENCONE] = MeshBuilder::GenerateCone("cone", Color(0, 0.8f,
 		0), 16, 2);
 	meshList[GEO_CYLINDER] = MeshBuilder::GenerateCylinder("cylinder", Color(1, 1,
@@ -317,18 +321,18 @@ void Scene1::Update(double dt)
 								{
 									rotatecarRight4th = -90;
 									movecar5th += 0.1f;
-									if (movecar5th >= 13.0f)
+									if (movecar5th >= 12.0f)
 									{
-										movecar5th = 13.0f;
+										movecar5th = 12.0f;
 										rotatecarRight5th -= 1;
 										if (rotatecarRight5th < -90)
 										{
 
 											rotatecarRight5th = -90;
 											movecar6th += 0.1f;
-											if (movecar6th >= 2.0f)
+											if (movecar6th >= -2)
 											{
-												movecar6th = 2.0f;
+												movecar6th = -2;
 												/*movecarForward =0 ;*/
 												/*rotatecarRight = 0;*/
 												movecarminusX = 0;
@@ -352,7 +356,6 @@ void Scene1::Update(double dt)
 					
 			}
 		}
-		doorOpening += 0.1f;
 		wheels360 += 2;
 		if (sprout)
 		{
@@ -360,6 +363,7 @@ void Scene1::Update(double dt)
 			fireworks += 0.1f;
 
 		}
+		topcarRotate += 1;
 
 	}
 	
@@ -435,13 +439,13 @@ void Scene1::Render()
 	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 
 	// Render VBO here
-	meshList[GEO_AXES]->Render();
+	/*meshList[GEO_AXES]->Render();*/
 	
 	for (int i = -500; i < 500; i++)
 	{
-		Mtx44 waltur;
-		waltur.SetToTranslation(i, 0, i);
-		MVP = projectionStack.Top() * viewStack.Top() * waltur; 
+		Mtx44 grids;
+		grids.SetToTranslation(i, -0.5f, i);
+		MVP = projectionStack.Top() * viewStack.Top() * grids; 
 		glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE, &MVP.a[0]);
 		meshList[GEO_AXES]->Render();
 	}
@@ -452,7 +456,7 @@ void Scene1::Render()
 
 	modelStack.PushMatrix();
 	{
-		modelStack.Scale(1.5f, 1, 1);
+		modelStack.Scale(2, 1.5f ,1);
 		modelStack.Rotate(aroundtheWorldleft, 0, 1, 0);
 		modelStack.Rotate(aroundtheWorldright, 0, 1, 0);
 	// Push Matrix call
@@ -3027,8 +3031,9 @@ void Scene1::Render()
 	// TREE
 	modelStack.PushMatrix();
 	{
-		modelStack.Translate(5, -3.5f, -1);
-		//PLANT POT
+		modelStack.Translate(3.5f, -2, -1);
+		modelStack.Scale(0.6f, 0.5f, 0.5f);
+
 		modelStack.PushMatrix();
 		{
 			
@@ -3070,9 +3075,10 @@ void Scene1::Render()
 	}
 	modelStack.PopMatrix();
 
-	// PLANTS
+	// Tree
 	modelStack.PushMatrix();{
-	modelStack.Translate(5, -3.5f, 0);
+	modelStack.Translate(3.5f, -2, 0);
+	modelStack.Scale(0.6f, 0.5f, 0.5f);
 	//PLANT POT
 	modelStack.PushMatrix();
 	{
@@ -3114,11 +3120,12 @@ void Scene1::Render()
 	}
 	modelStack.PopMatrix();
 
-	// LEFT OF GYM PLANTS
+	
 
 	modelStack.PushMatrix(); {
-		modelStack.Translate(1 , -3.5f, 4);
-		//PLANT POT
+		modelStack.Translate(1 , -3, 4);
+		modelStack.Scale(0.6f, 0.8f, 0.5f);
+	
 		modelStack.PushMatrix();
 		{
 
@@ -3161,8 +3168,9 @@ void Scene1::Render()
 
 
 	modelStack.PushMatrix(); {
-		modelStack.Translate(0, -3.5f, 4);
-		//PLANT POT
+		modelStack.Translate(0, -3, 4);
+		modelStack.Scale(0.6f, 0.8f, 0.5f);
+	
 		modelStack.PushMatrix();
 		{
 
@@ -3181,7 +3189,7 @@ void Scene1::Render()
 			meshList[GEO_BROWNCYLINDER]->Render();
 		}
 		modelStack.PopMatrix();
-		// PLANTS
+		
 		modelStack.PushMatrix();
 		{
 
@@ -5256,11 +5264,11 @@ void Scene1::Render()
 
 			// Translate the back rest to its position
 			/*modelStack.Translate(planePos.x + 0.05f, planePos.y - 0.4f, planePos.z);*/
-			modelStack.Translate(0.75f, 0.5f, -0.15f);
+			modelStack.Translate(0, -0.79f, -0.2f);
 			///*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
 			//modelStack.Rotate(90, 1, 0, 0);
 			// Scale the back rest to its position
-			modelStack.Scale(0.08f, 0.08f, 0.08f);
+			modelStack.Scale(0.05f, 0.05f, 0.05f);
 			// Compute the MVP using projection, view and model
 			MVP = projectionStack.Top() * viewStack.Top() *
 				modelStack.Top();
@@ -6954,7 +6962,7 @@ modelStack.PopMatrix();
 	MS carStack;
 	carStack.PushMatrix();
 	{
-
+		carStack.Translate(0, helicopterCar, 0);
 		carStack.Translate(0, -2, 1 );
 		carStack.Scale(1, 1, 1);
 		carStack.Translate(2, 0, 5);
@@ -7017,7 +7025,7 @@ modelStack.PopMatrix();
 				carStack.Translate(0, 1, 0);
 				/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
 				// Scale the back rest to its position
-				carStack.Scale(0.2f, 1.5f, 0.1f);
+				carStack.Scale(0.2f, 1.5f, 0.1f	);
 				// Compute the MVP using projection, view and model
 				MVP = projectionStack.Top() * viewStack.Top() *
 					carStack.Top();
@@ -7029,44 +7037,45 @@ modelStack.PopMatrix();
 			carStack.PopMatrix();
 
 
-			carStack.PushMatrix();
-			{
+			//carStack.PushMatrix();
+			//{
 
-				// Translate the back rest to its position
-				carStack.Translate(0, 1.4f, .3f);
-				/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
-				carStack.Rotate(90, 1, 0, 0);
-				// Scale the back rest to its position
-				carStack.Scale(0.2f, 0.5f, 0.2f);
-				// Compute the MVP using projection, view and model
-				MVP = projectionStack.Top() * viewStack.Top() *
-					carStack.Top();
-				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE,
-					&MVP.a[0]);
-				// Render the chair part accordingly
-				meshList[GEO_GREENCUBE]->Render();
-			}
-			carStack.PopMatrix();
+			//	// Translate the back rest to its position
+			//	carStack.Translate(0.1f, 1.5f, 0.3f);
+			//	/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
+			//	carStack.Rotate(90, 1, 0, 0);
+			//	carStack.Rotate(topcarRotate, 0, 0, 1);
+			//	// Scale the back rest to its position
+			//	carStack.Scale(0.2f, 2, 0.2f);
+			//	// Compute the MVP using projection, view and model
+			//	MVP = projectionStack.Top() * viewStack.Top() *
+			//		carStack.Top();
+			//	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE,
+			//		&MVP.a[0]);
+			//	// Render the chair part accordingly
+			//	meshList[GEO_GREENCUBE]->Render();
+			//}
+			//carStack.PopMatrix();
 
 
-			carStack.PushMatrix();
-			{
+			//carStack.PushMatrix();
+			//{
 
-				// Translate the back rest to its position
-				carStack.Translate(0, 1.4f, -.3f);
-				/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
-				carStack.Rotate(90, 1, 0, 0);
-				// Scale the back rest to its position
-				carStack.Scale(0.2f, 0.5f, 0.2f);
-				// Compute the MVP using projection, view and model
-				MVP = projectionStack.Top() * viewStack.Top() *
-					carStack.Top();
-				glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE,
-					&MVP.a[0]);
-				// Render the chair part accordingly
-				meshList[GEO_GREENCUBE]->Render();
-			}
-			carStack.PopMatrix();
+			//	// Translate the back rest to its position
+			//	carStack.Translate(0, 1.4f, -.3f);
+			//	/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
+			//	carStack.Rotate(90, 1, 0, 0);
+			//	// Scale the back rest to its position
+			//	carStack.Scale(0.2f, 0.5f, 0.2f);
+			//	// Compute the MVP using projection, view and model
+			//	MVP = projectionStack.Top() * viewStack.Top() *
+			//		carStack.Top();
+			//	glUniformMatrix4fv(m_parameters[U_MVP], 1, GL_FALSE,
+			//		&MVP.a[0]);
+			//	// Render the chair part accordingly
+			//	meshList[GEO_GREENCUBE]->Render();
+			//}
+			//carStack.PopMatrix();
 
 
 
@@ -7077,8 +7086,9 @@ modelStack.PopMatrix();
 				carStack.Translate(0, 1.4f, 0);
 				/*modelStack.Translate(planePos.x -0.5f, 3.5f, planePos.z + 0.5f);*/
 				carStack.Rotate(90, 0, 0, 1);
+				carStack.Rotate(topcarRotate, 1, 0, 0);
 				// Scale the back rest to its position
-				carStack.Scale(0.2f, 0.5f, 0.2f);
+				carStack.Scale(0.4f, 1, 0.4f);
 				// Compute the MVP using projection, view and model
 				MVP = projectionStack.Top() * viewStack.Top() *
 					carStack.Top();
@@ -7183,7 +7193,7 @@ modelStack.PopMatrix();
 				{
 					// Translate the back rest to its position
 					/*modelStack.Translate(planePos.x + 0.05f, planePos.y - 0.4f, planePos.z);*/
-					modelStack.Translate(i * fireworks, 6, j * fireworks);
+					modelStack.Translate(i * fireworks, 8, j * fireworks);
 					// Scale the back rest to its position
 					/*modelStack.Scale(0.08f, 0.08f, 0.08f);*/
 					modelStack.Scale(1, 1,1);
@@ -7202,57 +7212,6 @@ modelStack.PopMatrix();
 
 
 }
-//
-///*
-//*                                                                                          **//((((((#####%%%%%%&&&%%&%%%%%%%%%#%%%%##%##%%%%#(((((((////*/***.. .                                      
-//,                                                                                         ,*///((((######%%%%&&&&&&&%&&&&&%%#%#%%%%#%%%#%%##%%##(((((((////*,,.     .                                   
-//*                                                                                        .*////((((#####%#%%%%&&&&&&&%%%%%%%%%%%%%%%%%%%#%#####(((((((////***,..  . .                                   
-//*                 @@@@ ,@@@@/ @@@@& .@@@@@@@@@*      @@@@@.&@@@@   @@@@@@@&   @@@@@@@ @@@@@@@/(@@@@@@@@#%@@@@@@@@@@&&%%%%@@@@@@@@@%@@@@@%%@@@@@#@@@@#(/@@@@@@@@@,  @@@@@@@@% @@@@@@@@@@,                
-//*                 @@@@ @@@@(  @@@@& .@@@@..@@@@.     @@@@@@/@@@@  ,@@@#@@@@   @@@@@@@ @@@@@@@/(@@@@###%##@@@@@%@@@@@%&&%%@@@@@%%%%%@@@@@%%@@@@@%@@@@%(@@@@@*@@@@@ .@@@@@     @@@@@ @@@@@                
-//*                 @@@@/@@@#   @@@@& .@@@@..@@@@.     @@@@@@.@@@@  &@@@*@@@@.  @@@@,@@*@@&@@@@(#@@@@%%%%#%@@@@@&@@@@@&&%&%@@@@@%%&%&@@@@@%%@@@@@@@@@@#(@@@@@,...  ..@@@@@///, @@@@@ @@@@@                
-//*                 @@@@@@@@&   @@@@& .@@@@..@@@@.     @@@&@@@@@@@  @@@@.@@@@(  @@@@,@@@@@@@@@@/#@@@@@@@@%%@@@@@%@@@@@&&%%%@@@@@@@@@%@@@@@%%@@@&@@%@@@#(@@@@@/@@@@@ .@@@@@@@@/ @@@@@@@@@/.                
-//*                 @@@@@@@@@*  @@@@& .@@@@..@@@@.     @@@@#@@@@@@ .@@@@@@@@@@  @@@@/@@@@%@@@@@/(@@@@(####%@@@@@%@@@@@&&&%%@@@@@%%&%&@@@@@%%@@@&@@@@@@#/@@@@@,@@@@@ ,@@@@@     @@@@@ @@@@@                
-//*                 @@@@ #@@@@  @@@@& .@@@@..@@@@.     @@@@ @@@@@@ *@@@@@@@@@@  @@@@/&@@@.@@@@@/(@@@@((####@@@@@%@@@@@%%%%%@@@@@&%%%%@@@@@%#@@@@%@@@@@#/@@@@@,@@@@@ .@@@@@     @@@@@ @@@@@                
-//*                 @@@@  @@@@% @@@@& .@@@@@@@@@@      @@@@ @@@@@@ @@@@@ .@@@@. @@@@//@@@ @@@@@/(@@@@@@@@%#@@@@@@@@@@###%%#@@@@@%%###@@@@@#(@@@@/@@@@@(**@@@@@@@@@@  @@@@@@@@@ @@@@@ @@@@@                
-//*                       .                                            .      .     .     .**////(((((((((#((//(/////(((##%%#%#####(((((/*,,,,,......,,,,,*&&(,..              .                          
-//*                                                                                        ***///(((((((/((////,/(((((/////((#%%%#((/,.......,,,/*******..**,. .                                          
-//*                                                                                         ***//((((/(((((/,#%%(#(//*/((#(##%%&%%#(*.... ,*,./%#%&###(//*,,*                                             
-//*                                                                                .***********/////((((/,(((/*.  ..**/(##(##%%&&%%(*..   .*(((*#** .*..,*, .. .                                          
-//*                                                                                .,.. .*/*/*/////(#((*#(**/(#/**/######%%&%%%%%%#/,.....*/(#%%#%%***,.../,    .                                         
-//*                                                                                 *,,,,,.,**/////((((((##%#(#####(((((#%%%%%%%%%#/,. ,,*(%###%((((/((///#(*.   ....                                     
-//*                                                                                 .*,**,,****///(//((((((###(((//(((%%%%%%%%&%%%#(*..*///((##(#((#((##(#(*     .,,,.                                    
-//*                                                                                   ,***,*****///(((((#####%#(###%%%%%%%%%%%&%%%#(*..,*///(((((#(((((#//*.   .,**,,                                     
-//*                                                                     .  .           .***,,,,*///((((((#####(#%%#%%%%%%%%%%&&&%##(/...,**/((((#(((((//((/(/((///*..        .                            
-//*                                                                                      *****,,*///((((((#######%%%%%%%%%%%&&&%%###(/,..../((((((((/(/(/(((///**,.                                       
-//*                                                                  ....   .      .    . ,****,**///(((((((####%%%%%%%#%%%%&&&%%%###(* .   ,/((#((((///****,....                                         
-//*                                                  .... .........  ....... .  ..  ..     .**,***///(((((#(###%%%%%##(%%%&&&&&%%%%##(/..,,,,.,((##(((/*,.   .,,,,                           ...          
-//*   .                    ...              ........................................ ....... ***/**///((((((####%%%%((#%%%%%%&&%%%###/,    . . ./(##((//,.   .,*,,.               ...                     
-//*                      ....................... ..........................................  . */**//((((((######%#(/(#####%#%%%##(/*.       .   ./##((/*,    .,.,.           ..  ....    .               
-//*     .             ..................................................................... .. ../*////(((((######(((##%*,*(((((/*,               .,((((**     . .        .   ........    ..           .. 
-//*.  . ......................................................................................... ,/////(((((####((##%%%%%#((/*,,..               .,,/((/*       .        ............................. . 
-//*   ..........................................................................................   *////(((((((##(#%#%%%%%%#%#(//*,,,...        ..,*,,///*,              ................................ 
-///. ..............................................................................................,/////((((((((###%#########((//////**,*,*,..,.,***,.//*.              ................................ 
-//* ............................................................................................... */*//(((((((((##(#/(((#(((##((/((((((*/.,. ...*/*** **,              .................................
-//*.................................................................................................,**///((((((((/((,/*/(/(//***/*//*,...  .     ,****, ,,             ..................................
-///..................................................................................................***///(((((#(//,,..*//(((#(##(((((////**,. ...*/*,,,,,             ..................................
-///.................................................................................................. ,**///(((((#/*((###((((((##&((((///***,,..,,*/(////(*            ...................................
-///.................................................................................................. ****///(((((//(#####((########((((//**,,,.,,*/**(%#//.           ...................................
-///...............................................................................................    **/,*////##/###(##((((#((/((#((//*/**,,.,,,,,/(/,/(/*,             .................................
-///...............................................................,......,,,,,,,.,,,,,,.......        ***/**/(/(/(#((((((((((((#(((((/*/***,,**,,**/(/.***..                ..............................
-///..................................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,..            .***//*/((//#(#((((((/((#(#((##(((*/*****//(#//.*./,*.                  ............................
-///.....................................,.......,.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,..                  ,****////(#(##(#((#(####%##((#((##(((((/(*(**/.*  ..                     .......,..................
-///................................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                       ******////(/((((####%#(####((#((/(#/(*(/,/**,,.. .                          .....,.,......,........
-///............................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                         . .******//*/////#(#(#/(((#/((((/(/*/(,*,**(*..,                                   ..,..,,..,,,...,..
-///.....................,,,,,,..,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,                               .**********////(/(((/(//(/////((*(/,*/,.*.,.                                       .,....,,,,,,,,.
-///.................,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                                    ********//*.*//////*/*///*//**,*,.*  ,.                                             .,.,,,,,,,,.
-///...............,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                                         *************,,,,.**,*,,*,...                                                         ...,,,,,
-///........,..,,.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                                              ,**********,..                                                                         ,..,,
-///.......,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                                  .              . .,******,.                                                                              .,
-///......,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,.                                  . ....              .    ,**,,,........                                                                       .
-//
-//*/
-//
-
 
 	
 
@@ -7330,7 +7289,7 @@ void Scene1::HandleKeyPress()
 	{
 		//moveZ.Set(0.0f, 0.0f, -2.0f); // move inwards
 		/*doorOpening++;*/
-		doorOpening++;
+		/*doorOpening++;*/
 
 	}
 	if (Application::IsKeyPressed('N'))
@@ -7342,6 +7301,15 @@ void Scene1::HandleKeyPress()
 		
 
 	}
+
+	if (Application::IsKeyPressed('B'))
+	{
+		//moveZ.Set(0.0f, 0.0f, -2.0f); // move inwards
+		/*doorOpening++;*/
+		topcarRotate++;
+		helicopterCar += 0.01f;
+	}
+
 
 	// codes for if left or right key is pressed
 	if (Application::IsKeyPressed(VK_LEFT))
